@@ -7,19 +7,32 @@ router.get('/score', function(_, res, next) {
     if (err) {
       next(err)
     } else {
-      return res.send(result);
+      return res.send(result)
     }
   })
 })
 
 router.post('/score/add', function(req, res, next) {
-  const q = new Score({ score: req.body.score, user: req.session.username })
-  if(req.session.username) {
-    q.save(function(err) {
-      if (!err) {
-        return res.send({ success: 'OK' });
+  if (req.session.username) {
+    const q = new Score({ score: req.body.score, user: req.session.username })
+    Score.findOne({ user: req.session.username }, function(err, obj) {
+      if (err) {
+        return next(err)
+      }
+      if (obj === null) {
+        q.save(function(err) {
+          if (!err) {
+            return res.send({ success: 'OK' })
+          } else {
+            next(err)
+          }
+        })
       } else {
-        next(err);
+        if (q.score > obj.score) {
+          Score.updateOne({ user: req.session.username }, { score: req.body.score }, function(err, obj) {
+            console.log(err)
+          })
+        }
       }
     })
   }

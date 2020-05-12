@@ -10,13 +10,28 @@ let sendScore = function sendScore(number) {
   //does nothing until defined
 }
 
+let updateScore = function updateScore(number) {
+  //does nothing until defined
+}
 let speed = 4
 let clock = 100 / 60
 let last = 0
 let current = 0
-let gameover= false;
-// load the texture we need
-app.loader.add('ship', '../Game/ship.png').load((loader, resources) => {
+let gameover = false
+let asteroids = []
+let score = 0
+let asteroid_time = 10
+let asteroid_next = 10
+let colldist = 70
+
+
+function testColission(obj, ship) {
+  return Math.sqrt(Math.pow(ship.position.x - obj.position.x, 2) + Math.pow(ship.position.y - obj.position.y, 2)) < colldist
+
+}
+
+
+app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png').load((loader, resources) => {
 
   // This creates a texture from a 'bunny.png' image
   const ship = new PIXI.Sprite(resources.ship.texture)
@@ -36,7 +51,10 @@ app.loader.add('ship', '../Game/ship.png').load((loader, resources) => {
   // Listen for frame updates
   app.ticker.add((delta) => {
     current += delta
-    if (current > last + clock && gameover!==true) {
+    if (current > last + clock && gameover !== true) {
+      score++
+      updateScore(score)
+
       last = current
 
       if (pkeys[65]) {
@@ -56,6 +74,52 @@ app.loader.add('ship', '../Game/ship.png').load((loader, resources) => {
         ship.position.y = app.renderer.height
       } else if (ship.position.y < 0) {
         ship.position.y = 0
+      }
+
+      for (let i = asteroids.length - 1; i >= 0; i--) {
+        asteroids[i].rotation += asteroids[i].data.rspeed
+        asteroids[i].position.x += Math.cos(asteroids[i].data.direction) * asteroids[i].data.speed
+        asteroids[i].position.y += Math.sin(asteroids[i].data.direction) * asteroids[i].data.speed
+
+        if (testColission(asteroids[i], ship)) {
+          // game over
+          sendScore(score)
+          gameover = true
+        }
+
+        if (asteroids[i].position.x > 3 * app.renderer.width ||
+          asteroids[i].position.x < -2 * app.renderer.width ||
+          asteroids[i].position.y > 3 * app.renderer.height ||
+          asteroids[i].position.y < -2 * app.renderer.height) {
+          app.stage.removeChild(asteroids[i])
+          asteroids.splice(i, 1)
+        }
+      }
+
+      asteroid_next--
+      if (asteroid_next === 0) {
+        if (asteroid_time > 5) {
+          asteroid_time--
+        }
+        asteroid_next = asteroid_time
+        let asteroid = new PIXI.Sprite(resources.asteroid.texture)
+
+        asteroid.rotation = Math.random() * Math.PI * 2
+        asteroid.data = {}
+        asteroid.data.rspeed = Math.random() * .2
+        asteroid.data.speed = Math.random() * 5 + 2
+        asteroid.data.direction = Math.random() * Math.PI * 2
+        asteroid.x = app.renderer.width / 2
+        asteroid.y = app.renderer.height / 2
+
+        asteroid.position.x = Math.cos(asteroid.rotation) * 1.1 * app.renderer.width
+        asteroid.position.y += Math.sin(asteroid.rotation) * 1.1 * app.renderer.height
+
+        asteroid.anchor.x = 0.5
+        asteroid.anchor.y = 0.5
+
+        app.stage.addChild(asteroid)
+        asteroids.push(asteroid)
       }
     }
   })
@@ -84,6 +148,11 @@ $(document).ready(function() {
         $('.modal').css('display', 'none')
       },
     })
+  }
+
+  updateScore = function(score) {
+    $('#score').html(score,
+    )
   }
 
 })

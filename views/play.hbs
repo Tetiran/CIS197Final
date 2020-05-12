@@ -1,15 +1,13 @@
 <html>
   <head>
-    <title>Blade Runner</title>
+    <title>Asteroid Runner</title>
     <script src="/static/scripts/lib/jquery.min.js"></script>
       <script src="/static/scripts/lib/pixi.min.js"></script>
-
-
     <link rel="stylesheet" type="text/css" href="/static/styles/styles.css"/>
   </head>
   <body>
     <div class="bar">
-      <h2> Blade Runner </h2>
+      <h2> Asteroid Runner </h2>
       {{!-- STUB --}}
       {{#if user}}
         <p> Hi {{ user }}
@@ -18,9 +16,16 @@
       {{/if}}
       {{!-- ENDSTUB --}}
     </div>
+    <div class="center">
+    <p> Score </p>
+    </div>
+    <div class="center">
+        <b id="score"> </b>
+    </div>
     <div class="pane">
     <ul id="pane"></ul>
     </div>
+
   </body>
   <script src="/Game/container.js"></script>
 </html>
