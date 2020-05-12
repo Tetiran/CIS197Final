@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Blade Runner</title>
+    <script src="/static/scripts/lib/jquery.min.js"></script>
+    <script src="/static/scripts/main.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/styles/styles.css"/>
+  </head>
+  <body>
+    <div class="bar">
+      <h2> Blade Runner </h2>
+      {{!-- STUB --}}
+      {{#if user}}
+        <p> Hi {{ user }}
+          <a href="/account/logout">Log out</a>
+        </p>
+      {{/if}}
+      {{!-- ENDSTUB --}}
+    </div>
+
+    <div class="main-body">
+          {{#if user}}
+          {{/if}}
+      </div>
+  </body>
+</html>
