@@ -17,26 +17,26 @@ let speed = 4
 let clock = 100 / 60
 let last = 0
 let current = 0
-let gameover = false
+let gameOver = false
 let asteroids = []
 let score = 0
-let asteroid_time = 10
-let asteroid_next = 10
-let colldist = 70
+let asteroidTime = 10
+let asteroidNext = 10
+let collDist = 70
 
 
-function testColission(obj, ship) {
-  return Math.sqrt(Math.pow(ship.position.x - obj.position.x, 2) + Math.pow(ship.position.y - obj.position.y, 2)) < colldist
+function testCollision(obj, ship) {
+  return Math.sqrt(Math.pow(ship.position.x - obj.position.x, 2) + Math.pow(ship.position.y - obj.position.y, 2)) < collDist
 
 }
 
 
 app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png').load((loader, resources) => {
 
-  // This creates a texture from a 'bunny.png' image
+  // This creates a texture from a 'ship.png' image
   const ship = new PIXI.Sprite(resources.ship.texture)
 
-  // Setup the position of the bunny
+  // Setup the position of the ship
   ship.x = app.renderer.width / 2
   ship.y = app.renderer.height / 2
 
@@ -44,14 +44,15 @@ app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png
   ship.anchor.x = 0.5
   ship.anchor.y = 0.5
 
-  // Add the bunny to the scene we are building
+  // Add the ship to the scene we are building
   app.stage.addChild(ship)
 
 
   // Listen for frame updates
   app.ticker.add((delta) => {
     current += delta
-    if (current > last + clock && gameover !== true) {
+    // only run at game clock speed
+    if (current > last + clock && gameOver !== true) {
       score++
       updateScore(score)
 
@@ -76,17 +77,17 @@ app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png
         ship.position.y = 0
       }
 
+      // move all the asteroids and check for collisions
       for (let i = asteroids.length - 1; i >= 0; i--) {
         asteroids[i].rotation += asteroids[i].data.rspeed
         asteroids[i].position.x += Math.cos(asteroids[i].data.direction) * asteroids[i].data.speed
         asteroids[i].position.y += Math.sin(asteroids[i].data.direction) * asteroids[i].data.speed
 
-        if (testColission(asteroids[i], ship)) {
+        if (testCollision(asteroids[i], ship)) {
           // game over
           sendScore(score)
-          gameover = true
-        }
-
+          gameOver = true
+        }// remove asteroids if they are going off screen
         if (asteroids[i].position.x > 3 * app.renderer.width ||
           asteroids[i].position.x < -2 * app.renderer.width ||
           asteroids[i].position.y > 3 * app.renderer.height ||
@@ -96,12 +97,13 @@ app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png
         }
       }
 
-      asteroid_next--
-      if (asteroid_next === 0) {
-        if (asteroid_time > 5) {
-          asteroid_time--
+      // spawn new asteroids
+      asteroidNext--
+      if (asteroidNext === 0) {
+        if (asteroidTime > 5) {
+          asteroidTime--
         }
-        asteroid_next = asteroid_time
+        asteroidNext = asteroidTime
         let asteroid = new PIXI.Sprite(resources.asteroid.texture)
 
         asteroid.rotation = Math.random() * Math.PI * 2
@@ -126,6 +128,7 @@ app.loader.add('ship', '../Game/ship.png').add('asteroid', '../Game/asteroid.png
 })
 
 
+// key events
 let pkeys = []
 window.onkeydown = function(e) {
   let code = e.keyCode ? e.keyCode : e.which
@@ -137,6 +140,7 @@ window.onkeyup = function(e) {
   pkeys[code] = false
 }
 
+// update scores and send post requests
 $(document).ready(function() {
   sendScore = function(score) {
     $.ajax({

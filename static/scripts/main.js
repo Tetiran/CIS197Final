@@ -18,17 +18,9 @@ $(document).ready(function() {
         renderScores();
       },
     })
-    // TODO: make an ajax request to /api/getQuestions. on success
-    //       set  the data variable equal to the response and render
-    //       out the question previews (by callingrenderPreviews())
-    //       Later on in the writeup, also render the active question
-    //       (to update it) with renderactive()
-  }
 
-  /**
-   * Makes a list  of questions which all have the question text and a data-qid attribute
-   * that allows you to access their _id by doing $whateverjQueryObjectYouHave.data('qid')
-   */
+  }
+  // render scores into the DOM
   function renderScores() {
     $('#scores').html(('<tr>'+
       '<th>User</th>'+
