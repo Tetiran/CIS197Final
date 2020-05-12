@@ -2,7 +2,8 @@
   <head>
     <title>Blade Runner</title>
     <script src="/static/scripts/lib/jquery.min.js"></script>
-    <script src="/static/scripts/main.js"></script>
+      <script src="/static/scripts/lib/pixi.min.js"></script>
+
 
     <link rel="stylesheet" type="text/css" href="/static/styles/styles.css"/>
   </head>
@@ -12,15 +13,14 @@
       {{!-- STUB --}}
       {{#if user}}
         <p> Hi {{ user }}
-          <a href="/account/logout">Log out</a>
+          <a href="/">Main Menu</a>
         </p>
       {{/if}}
       {{!-- ENDSTUB --}}
     </div>
-
-    <div class="main-body">
-          {{#if user}}
-          {{/if}}
-      </div>
+    <div class="pane">
+    <ul id="pane"></ul>
+    </div>
   </body>
+  <script src="/Game/container.js"></script>
 </html>

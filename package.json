@@ -16,7 +16,8 @@
     "express-handlebars": "^3.1.0",
     "mockgoose": "^7.3.5",
     "mongoose": "^5.4.17",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "pixi.js": "^5.2.4"
   },
   "devDependencies": {
     "handlebars": "^4.5.0"

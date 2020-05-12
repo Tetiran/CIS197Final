@@ -10,8 +10,10 @@ router.get('/signup', function(req, res) {
 })
 
 router.post('/signup', function(req, res, next) {
-  var user = new User({ username: req.body.username,
-    password: req.body.password })
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
+  })
   User.findOne({ username: req.body.username }, function(err,obj) {
     if (err) {
       return next(err)

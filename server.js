@@ -5,7 +5,7 @@ var cookieSession = require('cookie-session')
 var mongoose = require('mongoose')
 var hbs = require('express-handlebars')
 
-var Question = require('./models/question.js')
+var Score = require('./models/score.js')
 var accountRouter = require('./routes/account.js')
 var apiRouter = require('./routes/api.js')
 
@@ -22,6 +22,7 @@ app.engine('.hbs', hbs({ extname: '.hbs' }))
 app.set('view engine', '.hbs')
 
 app.use('/static', express.static(path.join(__dirname, 'static')))
+app.use('/Game', express.static(path.join(__dirname, 'Game')))
 
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -34,12 +35,12 @@ app.use(
 )
 
 app.get('/', function(req, res, next) {
-  Question.find({}, function(err, result) {
+  Score.find({}, function(err, result) {
     if (err) {
       return next(err)
     }
     res.render('index', {
-      questions: result,
+      scores: result,
       layout: false,
       user : req.session.username,
     })
@@ -50,6 +51,7 @@ app.get('/play', function(req, res) {
   if(req.session.username) {
     res.render('play', {
       layout: false,
+      user : req.session.username,
     })
   } else {
     res.redirect('/account/login');
@@ -59,16 +61,11 @@ app.get('/play', function(req, res) {
 app.use('/account', accountRouter);
 app.use('/api', apiRouter);
 
-// TODO: set up post route that will
-//       a) check to see if a user is authenticated
-//       b) add a new question to the db
-//       c) redirect the user back to the home page when done
-
-app.post('/', function(req, res, next) {
-  var questionText = req.body.question;
-  var q = new Question({ questionText: questionText},{author: req.session.username})
+app.post('/play', function(req, res, next) {
+  var score = req.body.score;
+  var s = new Score({ score: score},{user: req.session.username})
   if(req.session.username) {
-    q.save(function(err) {
+    s.save(function(err) {
       if (!err) {
         res.redirect('/')
       } else {

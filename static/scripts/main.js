@@ -4,19 +4,18 @@ $(document).ready(function() {
   var activeIdx = -1
 
   // kick off getting the questions
-  getQuestions()
+  getScores()
   // now do it  every 2.5 seconds
-  setInterval(getQuestions, 2500)
+  setInterval(getScores, 2500)
 
-  function getQuestions() {
+  function getScores() {
     $.ajax({
-      url: '/api/questions',
+      url: '/api/score',
       data: {},
       type: 'GET',
       success: function(res) {
         data=res;
-        renderPreviews();
-        renderActive();
+        renderScores();
       },
     })
     // TODO: make an ajax request to /api/getQuestions. on success
@@ -30,79 +29,13 @@ $(document).ready(function() {
    * Makes a list  of questions which all have the question text and a data-qid attribute
    * that allows you to access their _id by doing $whateverjQueryObjectYouHave.data('qid')
    */
-  function renderPreviews() {
-    $('#questions').html(
-      data
-        .map(i => '<li data-qid="' + i._id + '">' + i.questionText + '</li>')
-        .join('')
+  function renderScores() {
+    $('#scores').html(('<tr>'+
+      '<th>User</th>'+
+      '<th>High Score</th>'+
+      '</tr>').concat(
+      data.map(i => '<tr data-qid="' + i._id + '">' +  '<th>' + i.user  +'</th>'  + '<th>' + i.score +'</th>'+ '</tr>')
+        .join(''))
     )
   }
-
-  function renderActive() {
-    if (activeIdx > -1) {
-      var active = data[activeIdx]
-      $('#show-question').css('display', 'block')
-      $('#question').text(active.questionText ? active.questionText : '')
-      $('#author').text(active.author ? active.author : '')
-      $('#answer-text').text(active.answer ? active.answer : '')
-    } else {
-      $('#show-question').css('display', 'none')
-    }
-  }
-
-  $('#questions').on('click', 'li', function() {
-    var _id = $(this).data('qid')
-    for( let i=0; i< data.length; i++){
-      if(data[i]._id === _id){
-        activeIdx=i;
-      }
-    }
-    // TODO: When a question is clicked, set the `active` variable equal to
-    //       the data of the question that is active (hint: look through the
-    //       data array. If an array entry has the same _id as the _id we just
-    //       declared here, it is the active question
-
-    // we now render out the active question
-    renderActive()
-  })
-
-  $('#show-question').on('click', '#submitAnswer', function() {
-    var answer = $('#answer').val();
-    var questionId = data[activeIdx]._id;
-    $.ajax({
-      url: '/api/questions/answer',
-      data: { answer: answer, questionId: questionId},
-      type: 'POST',
-      success: function(res) {
-        console.log(res)
-      },
-    })
-    // TODO: When we submit a new answer, send a POST request to
-    //      /api/questions/answer with  the question answer and the active question's
-    //      _id.
-  })
-
-  // When we want to make a new question, show the modal
-  $('#new-question').on('click', function() {
-    $('.modal').css('display', 'block')
-  })
-
-  $('#close').on('click', function() {
-    $('.modal').css('display', 'none')
-  })
-
-  $('#submit-question').on('click', function() {
-  var qText = $('#question-text').val();
-    $.ajax({
-      url: '/api/questions/add',
-      data: { questionText: qText },
-      type: 'POST',
-      success: function(res) {
-        console.log(res)
-        $('.modal').css('display', 'none')
-      },
-    })
-    // TODO: make a post request to /api/addQuestion with the qText as the
-    // questionText attribute. On success, hide the modal
-  })
 })

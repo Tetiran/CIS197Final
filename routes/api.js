@@ -1,9 +1,9 @@
-var express = require('express')
-var router = express.Router()
-var Question = require('../models/question.js')
+const express = require('express')
+const router = express.Router()
+const Score = require('../models/score.js')
 
-router.get('/questions', function(_, res, next) {
-  Question.find({}, function(err, result) {
+router.get('/score', function(_, res, next) {
+  Score.find({}, function(err, result) {
     if (err) {
       next(err)
     } else {
@@ -12,8 +12,8 @@ router.get('/questions', function(_, res, next) {
   })
 })
 
-router.post('/questions/add', function(req, res, next) {
-  var q = new Question({ questionText: req.body.questionText, author: req.session.username})
+router.post('/score/add', function(req, res, next) {
+  const q = new Score({ score: req.body.score, user: req.session.username })
   if(req.session.username) {
     q.save(function(err) {
       if (!err) {
@@ -22,20 +22,6 @@ router.post('/questions/add', function(req, res, next) {
         next(err);
       }
     })
-  }
-})
-
-router.post('/questions/answer', function(req, res, next) {
-  var questionId = req.body.questionId;
-  var answer = req.body.answer
-  if(req.session.username) {
-    Question.update({ _id: questionId },{$set: { answer: answer }}, function(err) {
-      if (!err) {
-        return res.send({ success: 'OK' });
-      } else {
-        next(err);
-      }
-    });
   }
 })
 
